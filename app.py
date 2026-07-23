@@ -32,31 +32,12 @@ def load_data():
 df_raw = load_data()
 
 
+# 3. Sidebar Filters (Chart View Selector Moved to TOP)
 
-# 3. Sidebar Filters
-
-st.sidebar.title("🔍 Global Filters")
+st.sidebar.title("🔍 Navigation & Filters")
 st.sidebar.markdown("---")
 
-# Department Filter
-departments = ["All"] + sorted(list(df_raw["Department"].dropna().unique()))
-selected_dept = st.sidebar.selectbox("🏢 Select Department", departments)
-
-# City Filter
-df_dept_filtered = df_raw if selected_dept == "All" else df_raw[df_raw["Department"] == selected_dept]
-cities = ["All"] + sorted(list(df_dept_filtered["City"].dropna().unique()))
-selected_city = st.sidebar.selectbox("📍 Select City", cities)
-
-# Sliders
-min_sal, max_sal = int(df_raw["Salary"].min()), int(df_raw["Salary"].max())
-salary_range = st.sidebar.slider("💰 Salary Range", min_sal, max_sal, (min_sal, max_sal))
-
-min_exp, max_exp = int(df_raw["Experience"].min()), int(df_raw["Experience"].max())
-exp_range = st.sidebar.slider("📈 Experience (Years)", min_exp, max_exp, (min_exp, max_exp))
-
-st.sidebar.markdown("---")
-
-# View Selector Options
+# 1️⃣ View Selector Options (CHART FILTER MOVED UP)
 VIEW_OPTIONS = [
     "All Charts (Full Dashboard)",
     "Department Analysis",
@@ -68,6 +49,26 @@ VIEW_OPTIONS = [
 ]
 
 chart_type = st.sidebar.selectbox("📊 Select Dashboard View", VIEW_OPTIONS)
+
+st.sidebar.markdown("---")
+
+# 2️⃣ Department Filter
+departments = ["All"] + sorted(list(df_raw["Department"].dropna().unique()))
+selected_dept = st.sidebar.selectbox("🏢 Select Department", departments)
+
+# 3️⃣ City Filter
+df_dept_filtered = df_raw if selected_dept == "All" else df_raw[df_raw["Department"] == selected_dept]
+cities = ["All"] + sorted(list(df_dept_filtered["City"].dropna().unique()))
+selected_city = st.sidebar.selectbox("📍 Select City", cities)
+
+# 4️⃣ Sliders (Salary & Experience)
+min_sal, max_sal = int(df_raw["Salary"].min()), int(df_raw["Salary"].max())
+salary_range = st.sidebar.slider("💰 Salary Range", min_sal, max_sal, (min_sal, max_sal))
+
+min_exp, max_exp = int(df_raw["Experience"].min()), int(df_raw["Experience"].max())
+exp_range = st.sidebar.slider("📈 Experience (Years)", min_exp, max_exp, (min_exp, max_exp))
+
+st.sidebar.markdown("---")
 
 # Apply Data Filtering
 filtered_df = df_raw.copy()
@@ -82,7 +83,6 @@ filtered_df = filtered_df[
     (filtered_df["Salary"] >= salary_range[0]) & (filtered_df["Salary"] <= salary_range[1]) &
     (filtered_df["Experience"] >= exp_range[0]) & (filtered_df["Experience"] <= exp_range[1])
 ]
-
 
 
 # 4. Header & Executive KPIs
@@ -148,9 +148,7 @@ st.info(
 )
 
 
-
 # 6. Plotly Charts Functions
-
 
 def chart_department_distribution(df):
     st.subheader("🏢 Department Workforce Share `[Donut Chart]`")
@@ -231,9 +229,7 @@ def chart_city_headcount(df):
     st.plotly_chart(fig, use_container_width=True)
 
 
-
-# FIXED: Dynamic Chart Filtering Router
-
+# Dynamic Chart Filtering Router
 
 if chart_type == "All Charts (Full Dashboard)":
     c1, c2 = st.columns(2)
