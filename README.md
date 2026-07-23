@@ -20,7 +20,7 @@ An interactive enterprise-grade HR Analytics Dashboard built using **Python, Str
 - **Cross-Tabulation Pivot Table**: Executive matrix showing Headcount, Average Salary, and Total Expense across Departments and Locations.
 - **Conditional Styled Data Table**: Heatmap-style formatting (`Pandas Styler`) highlighting min/max salary brackets.
 - **Data Export**: One-click export functionality to download filtered views in CSV format.
-
+![Dashboard Preview](dashboard_preview.png)
 ---
 
 ## 🛠️ Tech Stack & Tools
