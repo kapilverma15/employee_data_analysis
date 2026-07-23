@@ -287,7 +287,7 @@ st.markdown("---")
 col_table, col_download = st.columns([3, 1])
 
 with col_table:
-    st.subheader("📋 Master Employee Data")
+    st.subheader("📋 Colourful Master Employee Data")
 
 with col_download:
     csv_data = filtered_df.to_csv(index=False).encode('utf-8')
@@ -299,12 +299,37 @@ with col_download:
         use_container_width=True
     )
 
-# Safe Table Configuration (No Matplotlib Dependency)
+# Native Streamlit Colourful Table Configuration (No Matplotlib Dependency)
 st.dataframe(
     filtered_df,
     use_container_width=True,
+    hide_index=True,
     column_config={
-        "Salary": st.column_config.NumberColumn("Salary", format="₹%d"),
-        "Experience": st.column_config.NumberColumn("Experience (Yrs)", format="%d Yrs")
+        "Department": st.column_config.TextColumn(
+            "Department 🏢",
+            help="Employee Department"
+        ),
+        "City": st.column_config.TextColumn(
+            "City 📍",
+            help="Work Location"
+        ),
+        "Salary": st.column_config.ProgressColumn(
+            "Salary (₹) 💰",
+            help="Annual Salary Level",
+            format="₹%d",
+            min_value=int(df_raw["Salary"].min()),
+            max_value=int(df_raw["Salary"].max()),
+        ),
+        "Experience": st.column_config.ProgressColumn(
+            "Experience (Yrs) 📈",
+            help="Years of Experience",
+            format="%d Yrs",
+            min_value=0,
+            max_value=int(df_raw["Experience"].max()),
+        ),
+        "Age": st.column_config.NumberColumn(
+            "Age 🎂",
+            format="%d Yrs"
+        )
     }
 )
