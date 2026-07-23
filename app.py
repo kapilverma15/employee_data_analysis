@@ -299,37 +299,35 @@ with col_download:
         use_container_width=True
     )
 
-# Native Streamlit Colourful Table Configuration (No Matplotlib Dependency)
-st.dataframe(
-    filtered_df,
-    use_container_width=True,
-    hide_index=True,
-    column_config={
-        "Department": st.column_config.TextColumn(
-            "Department 🏢",
-            help="Employee Department"
-        ),
-        "City": st.column_config.TextColumn(
-            "City 📍",
-            help="Work Location"
-        ),
-        "Salary": st.column_config.ProgressColumn(
-            "Salary (₹) 💰",
-            help="Annual Salary Level",
-            format="₹%d",
-            min_value=int(df_raw["Salary"].min()),
-            max_value=int(df_raw["Salary"].max()),
-        ),
-        "Experience": st.column_config.ProgressColumn(
-            "Experience (Yrs) 📈",
-            help="Years of Experience",
-            format="%d Yrs",
-            min_value=0,
-            max_value=int(df_raw["Experience"].max()),
-        ),
-        "Age": st.column_config.NumberColumn(
-            "Age 🎂",
-            format="%d Yrs"
-        )
-    }
-)
+# Try Colourful Cell Styling (Green/Blue Gradients + Highlighting)
+try:
+    styled_df = filtered_df.style \
+        .background_gradient(subset=["Salary"], cmap="YlGn") \
+        .background_gradient(subset=["Experience"], cmap="Blues") \
+        .highlight_max(subset=["Salary"], color="#90ee90") \
+        .highlight_min(subset=["Salary"], color="#ffcccb") \
+        .format({"Salary": "₹{:,.0f}"})
+
+    st.dataframe(styled_df, use_container_width=True)
+
+except Exception:
+    # Safe Fallback with Progress Bars if Matplotlib is missing
+    st.dataframe(
+        filtered_df,
+        use_container_width=True,
+        hide_index=True,
+        column_config={
+            "Salary": st.column_config.ProgressColumn(
+                "Salary (₹)",
+                format="₹%d",
+                min_value=int(df_raw["Salary"].min()),
+                max_value=int(df_raw["Salary"].max()),
+            ),
+            "Experience": st.column_config.ProgressColumn(
+                "Experience (Yrs)",
+                format="%d Yrs",
+                min_value=0,
+                max_value=int(df_raw["Experience"].max()),
+            )
+        }
+    )
