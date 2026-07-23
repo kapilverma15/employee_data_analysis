@@ -32,12 +32,11 @@ def load_data():
 df_raw = load_data()
 
 
-# 3. Sidebar Filters (Chart View Selector Moved to TOP)
+# 3. Compact Sidebar Filters (No CSS, Single Screen Fit)
 
 st.sidebar.title("🔍 Navigation & Filters")
-st.sidebar.markdown("---")
 
-# 1️⃣ View Selector Options (CHART FILTER MOVED UP)
+# 1️⃣ View Selector Options
 VIEW_OPTIONS = [
     "All Charts (Full Dashboard)",
     "Department Analysis",
@@ -47,19 +46,16 @@ VIEW_OPTIONS = [
     "Age & Demographics",
     "Location & City Analysis"
 ]
-
-chart_type = st.sidebar.selectbox("📊 Select Dashboard View", VIEW_OPTIONS)
-
-st.sidebar.markdown("---")
+chart_type = st.sidebar.selectbox("📊 Dashboard View", VIEW_OPTIONS)
 
 # 2️⃣ Department Filter
 departments = ["All"] + sorted(list(df_raw["Department"].dropna().unique()))
-selected_dept = st.sidebar.selectbox("🏢 Select Department", departments)
+selected_dept = st.sidebar.selectbox("🏢 Department", departments)
 
 # 3️⃣ City Filter
 df_dept_filtered = df_raw if selected_dept == "All" else df_raw[df_raw["Department"] == selected_dept]
 cities = ["All"] + sorted(list(df_dept_filtered["City"].dropna().unique()))
-selected_city = st.sidebar.selectbox("📍 Select City", cities)
+selected_city = st.sidebar.selectbox("📍 City", cities)
 
 # 4️⃣ Sliders (Salary & Experience)
 min_sal, max_sal = int(df_raw["Salary"].min()), int(df_raw["Salary"].max())
@@ -67,8 +63,6 @@ salary_range = st.sidebar.slider("💰 Salary Range", min_sal, max_sal, (min_sal
 
 min_exp, max_exp = int(df_raw["Experience"].min()), int(df_raw["Experience"].max())
 exp_range = st.sidebar.slider("📈 Experience (Years)", min_exp, max_exp, (min_exp, max_exp))
-
-st.sidebar.markdown("---")
 
 # Apply Data Filtering
 filtered_df = df_raw.copy()
@@ -293,7 +287,7 @@ st.markdown("---")
 col_table, col_download = st.columns([3, 1])
 
 with col_table:
-    st.subheader("📋 Colourful Master Employee Data")
+    st.subheader("📋 Master Employee Data")
 
 with col_download:
     csv_data = filtered_df.to_csv(index=False).encode('utf-8')
@@ -305,12 +299,12 @@ with col_download:
         use_container_width=True
     )
 
-# Pandas Styler for Colourful Data Table
-styled_df = filtered_df.style \
-    .background_gradient(subset=["Salary"], cmap="YlGn") \
-    .background_gradient(subset=["Experience"], cmap="Blues") \
-    .highlight_max(subset=["Salary"], color="#90ee90") \
-    .highlight_min(subset=["Salary"], color="#ffcccb") \
-    .format({"Salary": "₹{:,.0f}"})
-
-st.dataframe(styled_df, use_container_width=True)
+# Safe Table Configuration (No Matplotlib Dependency)
+st.dataframe(
+    filtered_df,
+    use_container_width=True,
+    column_config={
+        "Salary": st.column_config.NumberColumn("Salary", format="₹%d"),
+        "Experience": st.column_config.NumberColumn("Experience (Yrs)", format="%d Yrs")
+    }
+)
